@@ -16,6 +16,9 @@ app.use((req, res, next) => {
 }); // CORS
 
 // routes/endpoints
+
+/* LISTS URL */
+
 app.get('/lists', (req, res) => {
     List.find({})
         .then(lists => res.send(lists))
@@ -42,9 +45,48 @@ app.patch('/lists/:listId', (req, res) => {
 });
 
 app.delete('/lists/:listId', (req, res) => {
+    const deleteTasks = (list) => {
+        Task.deleteMany({ _listId: list._id })
+            .then(() => list)
+            .catch((error) => console.log(error));
+    };
+
     List.findByIdAndDelete(req.params.listId)
-        .then((list) => res.send(list))
+                    .then((list) => res.send(deleteTasks(list)))
+                    .catch((error) => console.log(error));
+});
+
+/* TASKS URL */
+
+app.get('/lists/:listId/tasks/:taskId', (req, res) => {
+    Task.find({ _listId: req.params.listId })
+        .then((tasks) => res.send(tasks))
         .catch((error) => console.log(error));
-})
+});
+
+app.post('/lists/:listId/tasks', (req, res) => {
+    (new Task({ '_listId': req.params.listId, 'title': req.body.title }))
+        .save()
+        .then((task) => res.send(task))
+        .catch((error) => console.log(error));
+});
+
+app.get('/lists/:listId/tasks/:taskId', (req, res) => {
+    Task.findOne({ _listId: req.params.listId, _id: req.params.taskId })
+        .then((task) => res.send(task))
+        .catch((error) => console.log(error));
+});
+
+app.patch('/lists/:listId/tasks/:taskId', (req, res) => {
+    List.findOneAndUpdate({ _listId: req.params.listId, _id: req.params.taskId }, { $set: req.body })
+        .then((task) => res.send(task))
+        .catch((error) => console.log(error));
+});
+
+app.delete('/lists/:listId/tasks/:taskId', (req, res) => {
+    List.findOneAndDelete({ _listId: req.params.listId, _id: req.params.taskId })
+        .then((task) => res.send(task))
+        .catch((error) => console.log(error));
+});
 
 app.listen(3000, () => console.log("Server Connected on port 3000"));
