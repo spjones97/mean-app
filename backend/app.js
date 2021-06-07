@@ -10,8 +10,8 @@ app.use(express.json()); // allow app to use json data
 
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS, PUT, PATCH, DELETE");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS, PUT, PATCH, DELETE");
     next();
 }); // CORS
 
@@ -58,14 +58,14 @@ app.delete('/lists/:listId', (req, res) => {
 
 /* TASKS URL */
 
-app.get('/lists/:listId/tasks/:taskId', (req, res) => {
+app.get('/lists/:listId/tasks', (req, res) => {
     Task.find({ _listId: req.params.listId })
         .then((tasks) => res.send(tasks))
         .catch((error) => console.log(error));
 });
 
 app.post('/lists/:listId/tasks', (req, res) => {
-    (new Task({ '_listId': req.params.listId, 'title': req.body.title }))
+    (new Task({ 'title': req.body.title, '_listId': req.params.listId }))
         .save()
         .then((task) => res.send(task))
         .catch((error) => console.log(error));

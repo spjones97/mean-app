@@ -1,6 +1,6 @@
 export default class Task {
-    _id: string | undefined;
-    title: string | undefined;
-    _listId: string | undefined;
-    completed: boolean | undefined;
+    _id: string = "";
+    title: string = "";
+    _listId: string = "";
+    completed: boolean = false;
 }
